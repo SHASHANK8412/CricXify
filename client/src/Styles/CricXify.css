@@ -1,0 +1,29 @@
+/* CricXify.css - Styles for the Navbar component */
+
+.navbar {
+  transition: all 0.3s ease;
+}
+
+.navbar.animate {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add more navbar-specific styles as needed */ 
