@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const API_BASE_URL = "http://localhost:5174";
+const API_BASE_URL = "http://localhost:5176";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -65,8 +65,7 @@ export default function Register() {
     <div
       className="flex justify-center items-center min-h-screen text-white p-6 bg-cover bg-center"
       style={{
-        backgroundImage:
-          "url('https://www.hindustantimes.com/ht-img/img/2024/09/30/1600x900/Cricket_3_1727677442716_1727677564058.jpg')",
+        backgroundImage: "url('/Stadium.jpg')",
         backdropFilter: "blur(8px)",
       }}
     >

@@ -6,7 +6,7 @@
     min-height: 100vh;
     text-align: center;
     padding: 20px;
-    background: url('cricket-background.jpg') no-repeat center center/cover;
+    background: url('/Stadium.jpg') no-repeat center center/cover;
     backdrop-filter: blur(8px);
   }
   
@@ -67,4 +67,3 @@
   .register-button:hover {
     background-color: #0056b3;
   }
-   

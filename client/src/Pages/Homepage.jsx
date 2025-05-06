@@ -1,122 +1,188 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import News from '../components/News';
+import Footer from '../components/Footer';
+import { FaCalendarCheck, FaUserFriends, FaMapMarkerAlt, FaTrophy } from 'react-icons/fa';
 
-const Homepage = () => {
-  const [matches, setMatches] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const CricXifyHomepage = () => {
+  const { scrollYProgress } = useScroll();
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const response = await axios.get(
-          "https://api.cricapi.com/v1/cricScore?apikey=2bb2745d-491d-4306-a67b-4f442aafba67"
-        );
-        setMatches(response.data.data || []);
-      } catch (err) {
-        console.error("Error fetching match data:", err);
-        setError("Failed to fetch match data.");
-        setMatches([]);
-      } finally {
-        setLoading(false);
-      }
+    // Add smooth scroll behavior
+    document.documentElement.style.scrollBehavior = 'smooth';
+    return () => {
+      document.documentElement.style.scrollBehavior = 'auto';
     };
-
-    fetchMatches();
   }, []);
 
+  const cardVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10
+      }
+    },
+    hover: {
+      scale: 1.05,
+      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 font-sans">
-      {/* Heading */}
-      <header className="py-6 text-center bg-white shadow-md">
-        <h1 className="text-5xl font-extrabold text-purple-700">CricXify</h1>
-      </header>
-
-      {/* Content Section */}
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <h2 className="text-4xl font-bold text-purple-700 mb-8 text-center animate-fade-in-up">
-          Latest Cricket News & Articles
-        </h2>
-        {loading ? (
-          <p className="text-center text-gray-700 text-lg">Loading news...</p>
-        ) : error ? (
-          <p className="text-center text-red-500 text-lg">{error}</p>
-        ) : matches && matches.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
-            {matches.map((match, index) => (
-              <div
-                key={index}
-                className="bg-white border-l-4 border-purple-600 p-5 rounded-xl shadow-md hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+    <div className="bg-gray-900 min-h-screen">
+      {/* Hero Section */}
+      <section className="relative min-h-screen">
+        {/* Background Image with Parallax */}
+        <motion.div
+          style={{ scale, opacity }}
+          className="fixed inset-0 z-0"
+        >
+          <img
+            src="/Stadium.jpg"
+            alt="Stadium"
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70 backdrop-blur-[2px]" />
+        </motion.div>
+        
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+          <motion.h1
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 1,
+              type: "spring",
+              stiffness: 100 
+            }}
+            className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-white mb-8 drop-shadow-2xl text-center"
+          >
+            Welcome to CricXify
+          </motion.h1>
+          
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-2xl md:text-3xl text-gray-300 mb-12 drop-shadow-xl text-center max-w-3xl"
+          >
+            Your Ultimate Cricket Destination
+          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto px-4"
+          >
+            {[
+              { to: "/live-scores", icon: <FaTrophy />, text: "Live Scores", color: "purple" },
+              { to: "/upcoming-series", icon: <FaCalendarCheck />, text: "Upcoming Series", color: "blue" },
+              { to: "/teams", icon: <FaUserFriends />, text: "Teams", color: "green" },
+              { to: "/venue", icon: <FaMapMarkerAlt />, text: "Venues", color: "red" }
+            ].map((item, index) => (
+              <motion.div
+                key={item.to}
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                custom={index}
+                transition={{ delay: index * 0.1 }}
               >
-                <h3 className="text-lg font-semibold text-purple-800 flex items-center mb-2">
-                  🏏 {match.t1} vs {match.t2}
-                </h3>
-                <p className="text-sm text-gray-600 mb-1">
-                  {match.series || match.matchType}
-                </p>
-                <span className="inline-block px-3 py-1 mt-2 bg-purple-100 text-purple-800 text-sm rounded-full">
-                  {match.status}
-                </span>
-              </div>
+                <Link
+                  to={item.to}
+                  className={`group block bg-${item.color}-600/80 backdrop-blur-md hover:bg-${item.color}-700/90 text-white p-6 rounded-xl transition-all transform shadow-lg hover:shadow-${item.color}-500/30`}
+                >
+                  <div className="flex flex-col items-center">
+                    <motion.div
+                      className="text-4xl mb-4"
+                      whileHover={{ scale: 1.2, rotate: 360 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      {item.icon}
+                    </motion.div>
+                    <span className="text-lg font-medium group-hover:text-white/90">
+                      {item.text}
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
             ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-700 text-lg">
-            No matches available at the moment.
-          </p>
-        )}
-      </div>
+          </motion.div>
 
-      {/* Footer Section */}
-      <footer className="bg-gray-900 text-white pt-10 pb-5 mt-16">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10 text-sm">
-          {/* CricXify Logo */}
-          <div>
-            <h2 className="text-xl font-bold mb-4">CricXify</h2>
-            <p className="text-gray-400">
-              &copy; 2025 CricXify Inc. All rights reserved.
-            </p>
-          </div>
-
-          {/* Mobile & Apps */}
-          <div>
-            <h3 className="text-white font-semibold mb-2">MOBILE SITE & APPS</h3>
-            <ul className="space-y-1 text-gray-400">
-              <li><a href="#">m.cricxify.com</a></li>
-              <li><a href="#">Android</a></li>
-              <li><a href="#">iOS</a></li>
-            </ul>
-          </div>
-
-          {/* Social Media */}
-          <div>
-            <h3 className="text-white font-semibold mb-2">FOLLOW US ON</h3>
-            <ul className="space-y-1 text-gray-400">
-              <li><a href="#">Facebook</a></li>
-              <li><a href="#">Twitter</a></li>
-              <li><a href="#">YouTube</a></li>
-              <li><a href="#">Instagram</a></li>
-            </ul>
-          </div>
-
-          {/* Company Info */}
-          <div>
-            <h3 className="text-white font-semibold mb-2">COMPANY</h3>
-            <ul className="space-y-1 text-gray-400">
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Advertise</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Use</a></li>
-            </ul>
-          </div>
+          {/* Scroll Indicator */}
+          <motion.div
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+            animate={{ 
+              y: [0, 10, 0],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut" 
+            }}
+          >
+            <div className="text-white text-center">
+              <div className="h-16 w-8 border-2 border-white/80 rounded-full mx-auto mb-2 backdrop-blur-sm relative overflow-hidden">
+                <motion.div
+                  className="h-3 w-3 bg-white rounded-full mx-auto"
+                  animate={{
+                    y: [2, 24, 2]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </div>
+              <span className="text-sm drop-shadow-lg font-light tracking-wider">
+                Scroll for News
+              </span>
+            </div>
+          </motion.div>
         </div>
+      </section>
 
-        <div className="mt-10 border-t border-gray-700 pt-6 text-center text-gray-500 text-xs">
-          This site is best viewed in modern browsers. Content may be subject to copyright.
-        </div>
-      </footer>
+      {/* News Section with Scroll Animation */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+        className="py-12 relative z-10"
+      >
+        <News />
+      </motion.div>
+
+      {/* Footer with Animation */}
+      <motion.footer
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+        className="relative z-10"
+      >
+        <Footer />
+      </motion.footer>
     </div>
   );
 };
 
-export default Homepage;
+export default CricXifyHomepage;

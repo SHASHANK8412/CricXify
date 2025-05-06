@@ -10,7 +10,23 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5177,
-    strictPort: true,
+    port: 5178, // Changed from 5177 to 5178
+    strictPort: false, // Changed to false to allow fallback to another port if 5178 is in use
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5176',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+  publicDir: 'public', // Explicitly define public directory
+  build: {
+    assetsDir: 'assets',
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
+    },
   },
 });

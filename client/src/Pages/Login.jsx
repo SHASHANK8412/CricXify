@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaGoogle, FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
-import { Link } from "react-router-dom"; // Import Link for navigation
-import axios from "axios"; // Import Axios for API calls
-//import './Login.css';
-//import './SocialIcons.css';
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import axios from "axios";
 
-// API base URL - keep this consistent
-const API_BASE_URL = "http://localhost:5174";
+const API_BASE_URL = "http://localhost:5176";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate(); // Added navigate hook
 
   const validateInputs = () => {
     if (!email || !password) {
@@ -33,41 +31,37 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      console.log("Attempting login to:", `${API_BASE_URL}/api/login`);
       const response = await axios.post(`${API_BASE_URL}/api/login`, {
         email,
         password,
         rememberMe,
       });
 
-      setLoading(false);
-
       if (response.data.success) {
-        alert("Login Successful! 🎉");
-        localStorage.setItem("token", response.data.token); // Store JWT token
+        localStorage.setItem("token", response.data.token);
 
         if (rememberMe) {
           localStorage.setItem("user", JSON.stringify(response.data.user));
         } else {
           sessionStorage.setItem("user", JSON.stringify(response.data.user));
         }
-        // Redirect to homepage or dashboard
-        window.location.href = "/";
+        
+        // Use React Router's navigate instead of window.location
+        navigate("/");
       } else {
         alert("Error: " + response.data.message);
       }
     } catch (error) {
-      setLoading(false);
       console.error("Login Error:", error);
       if (error.response) {
-        console.error("Error response:", error.response.data);
         alert(`Login failed: ${error.response.data.message || "Something went wrong"}`);
       } else if (error.request) {
-        console.error("No response received:", error.request);
         alert("Server not responding. Please try again later.");
       } else {
         alert("Something went wrong. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
